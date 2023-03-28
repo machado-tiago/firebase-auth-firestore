@@ -1,9 +1,8 @@
-//  import { initializeApp } from "firebase/app"; //necessário usar um bundler de módulo (webpack/rollup)
-//  import { getFirestore } from "firebase/firestore";
-
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.18.0/firebase-app.js";
 import { getFirestore, collection, getDocs, setDoc, doc, query, where, updateDoc } from 'https://www.gstatic.com/firebasejs/9.18.0/firebase-firestore.js';
-import {getAuth,createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/9.18.0/firebase-auth.js";
+import {getAuth,createUserWithEmailAndPassword,signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/9.18.0/firebase-auth.js";
+//  import { initializeApp } from "firebase/app"; //necessário usar um bundler de módulo (webpack/rollup)
+//  import { getFirestore } from "firebase/firestore";
 
 // https://firebase.google.com/docs/web/setup#available-libraries
 
@@ -50,11 +49,45 @@ await updateDoc(documento, {
 })
 
 const auth = getAuth(app);
-createUserWithEmailAndPassword(auth, "tiago@gmail.com.net", "tiago123")
-  .then((userCredential) => {
-    const user = userCredential.user;
-  })
-  .catch((error) => {
-    const errorCode = error.code;
-    const errorMessage = error.message;
-  });
+
+function criarUsuarioEmail(auth,email,senha) {
+    createUserWithEmailAndPassword(auth, email, senha)
+      .then((userCredential) => {
+        const user = userCredential.user;
+      })
+     .catch((error) => {
+      const errorCode = error.code;
+      const errorMessage = error.message;
+      });
+}
+
+function login_email(auth, email, senha) {
+    signInWithEmailAndPassword(auth, email,senha)
+        .then(loggedUser =>{
+            console.log(auth.currentUser.email)
+        }).catch(error =>{
+            console.log(error.message)
+        })
+}
+// criarUsuarioEmail(auth, "teste@teste.com", "teste123")
+
+// login_email(auth, "teste@teste.com","teste123");
+// let user = getAuth(app).currentUser;
+// console.log(user);
+
+auth.onAuthStateChanged(user=>{
+    if (user) {
+        console.log(user)
+    }
+})
+
+function logout() {
+    auth.signOut().then(()=>{
+        console.log("Logout realizado!")
+    }
+    ).catch(error=>{
+        console.log(error);
+    })
+}
+
+setTimeout(logout,5000);
